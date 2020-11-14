@@ -2,6 +2,46 @@
  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
-<web-app>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                      http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
   <display-name>Archetype Created Web Application</display-name>
+
+  <servlet>
+    <servlet-name>SignInPage</servlet-name>
+    <jsp-file>/index.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SignInPage</servlet-name>
+    <url-pattern>/sign-in</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>SignUpPage</servlet-name>
+    <jsp-file>/WEB-INF/jsp/sign-up.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SignUpPage</servlet-name>
+    <url-pattern>/sign-up</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>CatalogPage</servlet-name>
+    <jsp-file>/WEB-INF/jsp/catalog.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CatalogPage</servlet-name>
+    <url-pattern>/library/catalog</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>Controller</servlet-name>
+    <servlet-class>controller.Controller</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Controller</servlet-name>
+    <url-pattern>/library/*</url-pattern>
+  </servlet-mapping>
 </web-app>
