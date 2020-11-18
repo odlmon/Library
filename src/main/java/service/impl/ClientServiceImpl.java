@@ -34,16 +34,15 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean signIn(User user) throws ServiceException {
+    public User signIn(User user) throws ServiceException {
         if (user.getLogin().equals("")) {
             throw new ServiceException("Login can't be empty");
         } else {
             try {
                 if (isPasswordCorrect(user)) {
-                    userDao.signIn(user);
-                    return true;
+                    return userDao.signIn(user);
                 } else {
-                    return false;
+                    return null;
                 }
             } catch (DAOException e) {
                 throw new ServiceException(e);
@@ -52,12 +51,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void signOut(String login) throws ServiceException {
-
-    }
-
-    @Override
-    public boolean signUp(User user)
+    public User signUp(User user)
             throws ServiceException {
         if (user.getLogin().equals("") || user.getPassword().equals("") || user.getFirstName().equals("") ||
                 user.getLastName().equals("")) {
@@ -65,14 +59,22 @@ public class ClientServiceImpl implements ClientService {
         } else {
             try {
                 if (isLoginUnique(user)) {
-                    userDao.signUp(user);
-                    return true;
+                    return userDao.signUp(user);
                 } else {
-                    return false;
+                    return null;
                 }
             } catch (DAOException e) {
                 throw new ServiceException(e);
             }
+        }
+    }
+
+    @Override
+    public User getUserByLogin(String login) throws ServiceException {
+        try {
+            return userDao.getUserByLogin(login);
+        } catch (DAOException e) {
+            throw new ServiceException(e);
         }
     }
 }

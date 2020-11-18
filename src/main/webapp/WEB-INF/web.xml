@@ -7,34 +7,16 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
                       http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-  <display-name>Archetype Created Web Application</display-name>
-
-  <servlet>
-    <servlet-name>SignInPage</servlet-name>
-    <jsp-file>/index.jsp</jsp-file>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>SignInPage</servlet-name>
-    <url-pattern>/sign-in</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>SignUpPage</servlet-name>
-    <jsp-file>/WEB-INF/jsp/sign-up.jsp</jsp-file>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>SignUpPage</servlet-name>
-    <url-pattern>/sign-up</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>CatalogPage</servlet-name>
-    <jsp-file>/WEB-INF/jsp/catalog.jsp</jsp-file>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>CatalogPage</servlet-name>
-    <url-pattern>/library/catalog</url-pattern>
-  </servlet-mapping>
+  <display-name>Library</display-name>
+  
+  <filter>
+    <filter-name>EndOfSessionFilter</filter-name>
+    <filter-class>filter.EndOfSessionFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>EndOfSessionFilter</filter-name>
+    <url-pattern>/library</url-pattern>
+  </filter-mapping>
   
   <servlet>
     <servlet-name>Controller</servlet-name>

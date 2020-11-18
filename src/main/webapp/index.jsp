@@ -19,46 +19,11 @@
             <div class="text-center">
                 <h1>Library</h1>
                 <h2>~~~</h2>
-                <h3>Sign In</h3>
-            </div>
-
-            <form action="${pageContext.request.contextPath}/library" method="post">
-                <c:if test="${not empty sessionScope.errorMessage}">
-                    <div class="row flex-spaces">
-                        <input class="alert-state" id="alert-5" type="checkbox">
-                        <div class="alert alert-danger dismissible">
-                            ${sessionScope.errorMessage}
-                            <label class="btn-close" for="alert-5">X</label>
-                        </div>
-                    </div>
-                </c:if>
-
-                <input type="hidden" name="action" value="sign-in">
-
-                <div class="row flex-center">
-                    <div class="form-group">
-                        <label for="login">Login</label>
-                        <input type="text" name="login" id="login">
-                    </div>
-                </div>
-
-                <div class="row flex-center">
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password">
-                    </div>
-                </div>
-
-                <div class="row flex-center">
-                    <input class="paper-btn" type="submit" value="Submit">
-                </div>
-            </form>
-
-            <div class="row flex-center">
-                <h4>Not registered? Sign up</h4>
-            </div>
-            <div class="row flex-center">
-                <button><a href="sign-up">Sign Up</a></button>
+                <h3>
+                    <a href="${pageContext.request.contextPath}/library/sign-in">Sign In</a>
+                    or
+                    <a href="${pageContext.request.contextPath}/library/sign-up">Sign Up</a>
+                </h3>
             </div>
         </div>
     </div>

@@ -1,8 +1,10 @@
 package dao.factory;
 
 import dao.BookDao;
+import dao.OrderDao;
 import dao.UserDao;
 import dao.impl.SQLBookDao;
+import dao.impl.SQLOrderDao;
 import dao.impl.SQLUserDao;
 
 public class DAOFactory {
@@ -10,6 +12,7 @@ public class DAOFactory {
 
     private final BookDao sqlBookImpl = new SQLBookDao();
     private final UserDao sqlUserImpl = new SQLUserDao();
+    private final OrderDao sqlOrderImpl = new SQLOrderDao();
 
     private DAOFactory() {}
 
@@ -23,5 +26,9 @@ public class DAOFactory {
 
     public UserDao getUserDAO() {
         return sqlUserImpl;
+    }
+
+    public OrderDao getOrderDAO() {
+        return sqlOrderImpl;
     }
 }

@@ -4,7 +4,7 @@ import bean.User;
 import service.exception.ServiceException;
 
 public interface ClientService {
-    boolean signIn(User user) throws ServiceException;
-    void signOut(String login) throws ServiceException;
-    boolean signUp(User user) throws ServiceException;
+    User signIn(User user) throws ServiceException;
+    User signUp(User user) throws ServiceException;
+    User getUserByLogin(String login) throws ServiceException;
 }

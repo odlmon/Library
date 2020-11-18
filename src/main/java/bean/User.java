@@ -1,5 +1,7 @@
 package bean;
 
+import bean.enums.UserRole;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -9,7 +11,7 @@ public class User implements Serializable {
     private String lastName;
     private String login;
     private String password;
-    private String role;
+    private UserRole role;
 
     public User() {
         id = -1;
@@ -17,10 +19,10 @@ public class User implements Serializable {
         lastName = "Noname";
         login = "nologin";
         password = "nopassword";
-        role = "norole";
+        role = UserRole.USER;
     }
 
-    public User(int id, String firstName, String lastName, String login, String password, String role) {
+    public User(int id, String firstName, String lastName, String login, String password, UserRole role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -69,11 +71,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
@@ -87,7 +89,7 @@ public class User implements Serializable {
                 lastName.equals(user.lastName) &&
                 login.equals(user.login) &&
                 password.equals(user.password) &&
-                role.equals(user.role);
+                role == user.role;
     }
 
     @Override
@@ -103,7 +105,7 @@ public class User implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
+                ", role=" + role +
                 '}';
     }
 }
