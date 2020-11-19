@@ -1,25 +1,50 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="custom" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
-<html lang="ru">
+<html>
+
+<fmt:setLocale value="${sessionScope.lang}"/>
+<fmt:setBundle basename="text"/>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://unpkg.com/papercss@1.8.1/dist/paper.min.css">
-    <title>Library: Sign In</title>
+    <title><fmt:message key="title_sign_in"/></title>
 </head>
 
 <body>
+<nav class="border fixed split-nav">
+    <div class="nav-brand">
+        <h3><a href="sign-in"><fmt:message key="library"/></a></h3>
+    </div>
+    <div class="collapsible">
+        <input id="collapsible1" type="checkbox" name="collapsible1">
+        <button>
+            <label for="collapsible1">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+            </label>
+        </button>
+        <div class="collapsible-body">
+            <ul class="inline">
+                <custom:lang path="/library/sign-in"/>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="paper container">
     <div class="row flex-center">
         <div class="col-fill col">
             <div class="text-center">
-                <h1>Library</h1>
+                <h1><fmt:message key="library"/></h1>
                 <h2>~~~</h2>
-                <h3>Sign In</h3>
+                <h3><fmt:message key="sign_in"/></h3>
             </div>
 
             <form action="${pageContext.request.contextPath}/library/sign-in" method="post">
@@ -37,14 +62,14 @@
 
                 <div class="row flex-center">
                     <div class="form-group">
-                        <label for="login">Login</label>
+                        <label for="login"><fmt:message key="field_login"/></label>
                         <input type="text" name="login" id="login">
                     </div>
                 </div>
 
                 <div class="row flex-center">
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password"><fmt:message key="field_password"/></label>
                         <input type="password" name="password" id="password">
                     </div>
                 </div>
@@ -55,11 +80,11 @@
             </form>
 
             <div class="row flex-center">
-                <h4>Not registered? Sign up</h4>
+                <h4><fmt:message key="not_registered"/></h4>
             </div>
             <div class="row flex-center">
                 <form action="${pageContext.request.contextPath}/library/sign-up">
-                    <button>Sign Up</button>
+                    <button><fmt:message key="sign_up"/></button>
                 </form>
             </div>
         </div>

@@ -1,22 +1,27 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="custom" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="ru">
+<html>
+
+<fmt:setLocale value="${sessionScope.lang}"/>
+<fmt:setBundle basename="text"/>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://unpkg.com/papercss@1.8.1/dist/paper.min.css">
-    <title>Library: Orders</title>
+    <title><fmt:message key="title_orders"/></title>
 </head>
 
 <body>
 <header>
     <nav class="border fixed split-nav">
         <div class="nav-brand">
-            <h3><a href="catalog">Library</a></h3>
+            <h3><a href="catalog"><fmt:message key="library"/></a></h3>
         </div>
         <div class="collapsible">
             <input id="collapsible1" type="checkbox" name="collapsible1">
@@ -30,12 +35,13 @@
             </button>
             <div class="collapsible-body">
                 <ul class="inline">
-                    <li><a href="orders">Заказы</a></li>
-                    <li><a href="eng">Eng</a></li>
-                    <li><a href="rus">Рус</a></li>
+                    <li><a href="orders"><fmt:message key="orders"/></a></li>
+                    <custom:lang path="/library/orders"/>
                     <li>
                         <form action="${pageContext.request.contextPath}/library/sign-out">
-                            <button class="btn-small btn-danger-outline">Signout</button>
+                            <button class="btn-small btn-danger-outline">
+                                <fmt:message key="sign_out"/>
+                            </button>
                         </form>
                     </li>
                 </ul>
@@ -49,7 +55,7 @@
         <div class="row flex-center">
             <div class="col-fill col">
                 <div class="text-center">
-                    <h1>Orders</h1>
+                    <h1><fmt:message key="orders"/></h1>
                     <h2>~~~</h2>
                 </div>
 
@@ -65,10 +71,10 @@
 
                 <div class="row flex-spaces tabs">
                     <input id="tab1" type="radio" name="tabs" checked>
-                    <label for="tab1">В обработке</label>
+                    <label for="tab1"><fmt:message key="processing"/></label>
 
                     <input id="tab2" type="radio" name="tabs">
-                    <label for="tab2">Активные</label>
+                    <label for="tab2"><fmt:message key="active"/></label>
 
                     <div class="content" id="content1">
                         <c:if test="${not empty requestScope.noProcessing}">
@@ -87,22 +93,24 @@
                                             <c:if test="${sessionScope.user.role eq 'USER'}">
                                                 <input type="hidden" name="action" value="cancel">
                                                 <input type="hidden" name="bookId" value="${order.book.id}">
-                                                <button class="btn-danger-outline">Отменить заказ</button>
+                                                <button class="btn-danger-outline">
+                                                    <fmt:message key="cancel_order"/>
+                                                </button>
                                             </c:if>
                                             <c:if test="${sessionScope.user.role eq 'LIBRARIAN'}">
                                                 <p class="card-text">
-                                                    Запрашивает ${order.user.firstName} "${order.user.login}" ${order.user.lastName}
+                                                    <fmt:message key="requests"/> ${order.user.firstName} "${order.user.login}" ${order.user.lastName}
                                                 </p>
                                                 <input type="hidden" name="userLogin" value="${order.user.login}">
                                                 <input type="hidden" name="bookId" value="${order.book.id}">
                                                 <button name="action" value="cancel" class="btn-danger-outline">
-                                                    Отменить заказ
+                                                    <fmt:message key="cancel_order"/>
                                                 </button>
                                                 <button name="action" value="reading_room" class="btn-primary-outline">
-                                                    Выдать в читальный зал
+                                                    <fmt:message key="give_reading_room"/>
                                                 </button>
                                                 <button name="action" value="subscription" class="btn-secondary-outline">
-                                                    Выдать по абонементу
+                                                    <fmt:message key="give_subscription"/>
                                                 </button>
                                             </c:if>
                                         </div>
@@ -126,21 +134,23 @@
                                         <div class="card-body">
                                             <h4 class="card-title">${order.book.title}
                                                 <c:if test="${order.status eq 'READING_ROOM'}">
-                                                    <span class="badge">Читальный зал</span>
+                                                    <span class="badge"><fmt:message key="reading_room"/></span>
                                                 </c:if>
                                                 <c:if test="${order.status eq 'SUBSCRIPTION'}">
-                                                    <span class="badge secondary">Абонемент</span>
+                                                    <span class="badge secondary"><fmt:message key="subscription"/></span>
                                                 </c:if>
                                             </h4>
                                             <h5 class="card-subtitle">${order.book.author}</h5>
                                             <c:if test="${sessionScope.user.role eq 'USER'}">
                                                 <input type="hidden" name="action" value="giveback">
                                                 <input type="hidden" name="bookId" value="${order.book.id}">
-                                                <button class="btn-success-outline">Вернуть книгу</button>
+                                                <button class="btn-success-outline">
+                                                    <fmt:message key="return_book"/>
+                                                </button>
                                             </c:if>
                                             <c:if test="${sessionScope.user.role eq 'LIBRARIAN'}">
                                                 <p class="card-text">
-                                                        ${order.user.firstName} "${order.user.login}" ${order.user.lastName} имеет на руках
+                                                        ${order.user.firstName} "${order.user.login}" ${order.user.lastName} <fmt:message key="has_on_hand"/>
                                                 </p>
                                             </c:if>
                                         </div>

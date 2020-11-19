@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public class EndOfSessionFilter implements Filter {
+public class UserSessionFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -17,13 +17,17 @@ public class EndOfSessionFilter implements Filter {
             throws IOException, ServletException {
         var request = (HttpServletRequest) servletRequest;
         var response = (HttpServletResponse) servletResponse;
-        HttpSession session = request.getSession(false);
-        if (session != null && !session.isNew()) {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("user") != null) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             String url = request.getRequestURL().toString();
-            url = url.substring(0, url.lastIndexOf("/")) + "/sign-in";
-            response.sendRedirect(url);
+            String resource = url.substring(url.lastIndexOf("/"));
+            if (!resource.equals("/sign-in") && !resource.equals("/sign-up")) {
+                response.sendRedirect(request.getContextPath());
+            } else {
+                filterChain.doFilter(servletRequest, servletResponse);
+            }
         }
     }
 

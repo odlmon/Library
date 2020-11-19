@@ -10,12 +10,21 @@
   <display-name>Library</display-name>
   
   <filter>
-    <filter-name>EndOfSessionFilter</filter-name>
-    <filter-class>filter.EndOfSessionFilter</filter-class>
+    <filter-name>UserSessionFilter</filter-name>
+    <filter-class>filter.UserSessionFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>EndOfSessionFilter</filter-name>
-    <url-pattern>/library</url-pattern>
+    <filter-name>UserSessionFilter</filter-name>
+    <url-pattern>/library/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>EncodingFilter</filter-name>
+    <filter-class>filter.EncodingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>/library/*</url-pattern>
   </filter-mapping>
   
   <servlet>

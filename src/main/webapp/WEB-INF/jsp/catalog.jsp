@@ -1,22 +1,27 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="custom" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
-<html lang="ru">
+<html>
+
+<fmt:setLocale value="${sessionScope.lang}"/>
+<fmt:setBundle basename="text"/>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://unpkg.com/papercss@1.8.1/dist/paper.min.css">
-    <title>Library: Catalog</title>
+    <title><fmt:message key="title_catalog"/></title>
 </head>
 
 <body>
 <header>
     <nav class="border fixed split-nav">
         <div class="nav-brand">
-            <h3><a href="catalog">Library</a></h3>
+            <h3><a href="catalog"><fmt:message key="library"/></a></h3>
         </div>
         <div class="collapsible">
             <input id="collapsible1" type="checkbox" name="collapsible1">
@@ -30,12 +35,13 @@
             </button>
             <div class="collapsible-body">
                 <ul class="inline">
-                    <li><a href="orders">Заказы</a></li>
-                    <li><a href="catalog/eng">Eng</a></li>
-                    <li><a href="catalog/rus">Рус</a></li>
+                    <li><a href="orders"><fmt:message key="orders"/></a></li>
+                    <custom:lang path="/library/catalog"/>
                     <li>
                         <form action="${pageContext.request.contextPath}/library/sign-out">
-                            <button class="btn-small btn-danger-outline">Signout</button>
+                            <button class="btn-small btn-danger-outline">
+                                <fmt:message key="sign_out"/>
+                            </button>
                         </form>
                     </li>
                 </ul>
@@ -50,7 +56,7 @@
             <div class="col-fill col">
                 <form>
                     <div class="text-center">
-                        <h1>Catalog</h1>
+                        <h1><fmt:message key="catalog"/></h1>
                         <h2>~~~</h2>
                     </div>
 
@@ -62,7 +68,9 @@
                         </c:if>
                         <c:if test="${sessionScope.user.role eq 'LIBRARIAN'}">
                             <div class="row flex-center">
-                                <button name="action" value="add">Добавить книгу</button>
+                                <button name="action" value="add">
+                                    <fmt:message key="add_book"/>
+                                </button>
                             </div>
                         </c:if>
                     </form>
@@ -98,29 +106,32 @@
                                         <input type="hidden" name="bookId" value="${book.id}">
                                         <c:if test="${sessionScope.user.role eq 'USER'}">
                                             <c:if test="${book.count gt 0}">
-                                                <button>Заказать</button>
+                                                <button><fmt:message key="to_order"/></button>
                                             </c:if>
                                             <c:if test="${book.count eq 0}">
-                                                <label class="paper-btn" for="modal-1">Заказать</label>
+                                                <label class="paper-btn" for="modal-1">
+                                                    <fmt:message key="to_order"/>
+                                                </label>
                                                 <input class="modal-state" id="modal-1" type="checkbox">
                                                 <div class="modal">
                                                     <label class="modal-bg" for="modal-1"></label>
                                                     <div class="modal-body">
                                                         <label class="btn-close" for="modal-1">X</label>
-                                                        <h4 class="modal-title">Уууупс:)</h4>
-                                                        <p class="modal-text">Кажется экземпляров этой книги не
-                                                            осталось</p>
-                                                        <label for="modal-1" class="paper-btn">Окей</label>
+                                                        <h4 class="modal-title"><fmt:message key="oops"/></h4>
+                                                        <p class="modal-text"><fmt:message key="oops_message"/></p>
+                                                        <label for="modal-1" class="paper-btn">
+                                                            <fmt:message key="ok"/>
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </c:if>
                                         </c:if>
                                         <c:if test="${sessionScope.user.role eq 'LIBRARIAN'}">
                                             <button class="btn-danger-outline" name="action" value="delete">
-                                                Удалить книгу
+                                                <fmt:message key="delete_book"/>
                                             </button>
                                             <button name="action" value="edit">
-                                                Отредактировать книгу
+                                                <fmt:message key="edit_bok"/>
                                             </button>
                                         </c:if>
                                     </div>

@@ -17,10 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class Controller extends HttpServlet {
     private final ClientService clientService = ServiceFactory.getInstance().getClientService();
     private final LibraryService libraryService = ServiceFactory.getInstance().getLibraryService();
+    private ResourceBundle bundle = ResourceBundle.getBundle("text");
 
     private String dispatch(String url, String destination) {
         return url.substring(0, url.lastIndexOf("/")) + "/" + destination;
@@ -37,11 +40,11 @@ public class Controller extends HttpServlet {
                 session.setAttribute("user", user);
                 response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
             } else {
-                request.setAttribute("errorMessage", "Неправильно введен логин или пароль");
+                request.setAttribute("errorMessage", bundle.getString("incorrect_login_password"));
                 request.getRequestDispatcher("/WEB-INF/jsp/sign-in.jsp").forward(request, response);
             }
         } catch (ServiceException e) {
-            request.setAttribute("errorMessage", "Поля не должны быть пустыми");
+            request.setAttribute("errorMessage", bundle.getString("empty_fields"));
             request.getRequestDispatcher("/WEB-INF/jsp/sign-in.jsp").forward(request, response);
         }
     }
@@ -60,11 +63,11 @@ public class Controller extends HttpServlet {
                 session.setAttribute("user", user);
                 response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
             } else {
-                request.setAttribute("errorMessage", "Логин занят");
+                request.setAttribute("errorMessage", bundle.getString("login_is_busy"));
                 request.getRequestDispatcher("/WEB-INF/jsp/sign-up.jsp").forward(request, response);
             }
         } catch (ServiceException e) {
-            request.setAttribute("errorMessage", "Поля не должны быть пустыми");
+            request.setAttribute("errorMessage", bundle.getString("empty_fields"));
             request.getRequestDispatcher("/WEB-INF/jsp/sign-up.jsp").forward(request, response);
         }
     }
@@ -83,17 +86,17 @@ public class Controller extends HttpServlet {
             try {
                 request.setAttribute("books", libraryService.getBookList());
             } catch (ServiceException e) {
-                request.setAttribute("errorMessage", "Ошибка получения списка книг");
+                request.setAttribute("errorMessage", bundle.getString("error_book_list"));
             }
         } else {
             try {
                 List<Book> bookList = libraryService.searchBooks(searchRequest);
                 request.setAttribute("books", bookList);
                 if (bookList.size() == 0) {
-                    request.setAttribute("noElements", "Ничего не найдено");
+                    request.setAttribute("noElements", bundle.getString("nothing_found"));
                 }
             } catch (ServiceException e) {
-                request.setAttribute("errorMessage", "Ошибка при поиске книг");
+                request.setAttribute("errorMessage", bundle.getString("error_searching"));
             }
         }
         request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
@@ -113,7 +116,7 @@ public class Controller extends HttpServlet {
                         }
                         response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
                     } catch (ServiceException e) {
-                        request.setAttribute("errorMessage", "Произошла ошибка удаления");
+                        request.setAttribute("errorMessage", bundle.getString("error_deleting"));
                         request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
                     }
                 }
@@ -123,7 +126,7 @@ public class Controller extends HttpServlet {
                         request.setAttribute("type", "edit");
                         request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
                     } catch (ServiceException e) {
-                        request.setAttribute("errorMessage", "Ошибка при попытке получения книги");
+                        request.setAttribute("errorMessage", bundle.getString("error_getting"));
                         request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
                     }
                 }
@@ -136,7 +139,7 @@ public class Controller extends HttpServlet {
             try {
                 request.setAttribute("books", libraryService.getBookList());
             } catch (ServiceException e) {
-                request.setAttribute("errorMessage", "Ошибка при получении списка книг");
+                request.setAttribute("errorMessage", bundle.getString("error_book_list"));
             }
             request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
         }
@@ -152,8 +155,8 @@ public class Controller extends HttpServlet {
         }
     }
 
-    private List<Order> getUserOrders(String bookId, User user, String action) throws ServiceException {
-        if (bookId != null) {
+    private List<Order> getUserOrders(String bookId, User user, String action, boolean langIsSet) throws ServiceException {
+        if (bookId != null && !langIsSet) {
             Book book = libraryService.getBookById(bookId);
             var order = new Order();
             order.setUser(user);
@@ -168,8 +171,8 @@ public class Controller extends HttpServlet {
         return libraryService.getUserOrders(user);
     }
 
-    private List<Order> getOrders(String bookId, String userLogin, String action) throws ServiceException {
-        if (bookId != null) {
+    private List<Order> getOrders(String bookId, String userLogin, String action, boolean langIsSet) throws ServiceException {
+        if (bookId != null && !langIsSet) {
             User user = clientService.getUserByLogin(userLogin);
             Book book = libraryService.getBookById(bookId);
             var order = new Order();
@@ -199,22 +202,23 @@ public class Controller extends HttpServlet {
             String action = request.getParameter("action");
             String userLogin = request.getParameter("userLogin");
             String bookId = request.getParameter("bookId");
+            boolean langIsSet = request.getParameter("lang") != null;
             List<Order> orders;
             if (user.getRole() == UserRole.USER) {
-                orders = getUserOrders(bookId, user, action);
+                orders = getUserOrders(bookId, user, action, langIsSet);
             } else {
-                orders = getOrders(bookId, userLogin, action);
+                orders = getOrders(bookId, userLogin, action, langIsSet);
             }
             if (orders.stream().noneMatch(order -> order.getStatus() == OrderStatus.PROCESSING)) {
-                request.setAttribute("noProcessing", "У вас нет заказов в обработке");
+                request.setAttribute("noProcessing", bundle.getString("no_processing"));
             }
             if (orders.stream().noneMatch(order -> order.getStatus() != OrderStatus.PROCESSING)) {
-                request.setAttribute("noActive", "У вас нет активных заказов");
+                request.setAttribute("noActive", bundle.getString("no_active"));
             }
             request.setAttribute("orders", orders);
             request.getRequestDispatcher("/WEB-INF/jsp/orders.jsp").forward(request, response);
         } catch (ServiceException e) {
-            request.setAttribute("errorMessage", "Ошибка при получении списка заказов");
+            request.setAttribute("errorMessage", bundle.getString("error_order_list"));
         }
     }
 
@@ -230,19 +234,18 @@ public class Controller extends HttpServlet {
                 book.setAuthor(author);
                 book.setCount(Integer.parseInt(count));
                 if (!libraryService.addNewBook(book)) {
-                    request.setAttribute("errorMessage",
-                            "Книга не была добавлена из-за некорректно введенных данных");
+                    request.setAttribute("errorMessage", bundle.getString("error_add_book_data"));
                     request.setAttribute("type", "add");
                     request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
                 } else {
                     response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
                 }
             } catch (ServiceException e) {
-                request.setAttribute("errorMessage", "Ошибка при добавлении книги");
+                request.setAttribute("errorMessage", bundle.getString("error_add_book"));
                 request.setAttribute("type", "add");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
             } catch (NumberFormatException e) {
-                request.setAttribute("errorMessage", "Количество должно быть числом не меньше 0");
+                request.setAttribute("errorMessage", bundle.getString("error_count"));
                 request.setAttribute("type", "add");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
             }
@@ -263,8 +266,7 @@ public class Controller extends HttpServlet {
                 book.setAuthor(author);
                 book.setCount(Integer.parseInt(count));
                 if (!libraryService.addEditedBook(book)) {
-                    request.setAttribute("errorMessage",
-                            "Книга не была изменена из-за некорректно введенных данных");
+                    request.setAttribute("errorMessage", bundle.getString("error_edit_book_data"));
                     request.setAttribute("book", book);
                     request.setAttribute("type", "edit");
                     request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
@@ -272,11 +274,11 @@ public class Controller extends HttpServlet {
                     response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
                 }
             } catch (ServiceException e) {
-                request.setAttribute("errorMessage", "Ошибка при добавлении книги");
+                request.setAttribute("errorMessage", bundle.getString("error_edit_book"));
                 request.setAttribute("type", "edit");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
             } catch (NumberFormatException e) {
-                request.setAttribute("errorMessage", "Количество должно быть числом не меньше 0");
+                request.setAttribute("errorMessage", bundle.getString("error_count"));
                 request.setAttribute("type", "edit");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
             }
@@ -285,6 +287,13 @@ public class Controller extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String lang = request.getParameter("lang");
+        if (lang != null) {
+            request.getSession().setAttribute("lang", lang);
+            bundle = ResourceBundle.getBundle("text", new Locale(lang));
+            String query = request.getQueryString();
+            request.setAttribute("queryWithLang", query.substring(0, query.lastIndexOf("=")) + "=");
+        }
         String[] arr = request.getRequestURI().split("/");
         String action = arr[arr.length - 1];
         switch (action) {

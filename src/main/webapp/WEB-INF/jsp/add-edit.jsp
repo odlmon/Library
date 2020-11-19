@@ -1,8 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="custom" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html lang="ru">
+<html>
+
+<fmt:setLocale value="${sessionScope.lang}"/>
+<fmt:setBundle basename="text"/>
 
 <head>
     <meta charset="UTF-8">
@@ -10,10 +15,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://unpkg.com/papercss@1.8.1/dist/paper.min.css">
     <c:if test="${requestScope.type eq 'add'}">
-        <title>Library: Add book</title>
+        <title><fmt:message key="title_add_book"/></title>
     </c:if>
     <c:if test="${requestScope.type eq 'edit'}">
-        <title>Library: Edit book</title>
+        <title><fmt:message key="title_edit_book"/></title>
     </c:if>
 </head>
 
@@ -21,7 +26,7 @@
 <header>
     <nav class="border fixed split-nav">
         <div class="nav-brand">
-            <h3><a href="catalog">Library</a></h3>
+            <h3><a href="catalog"><fmt:message key="library"/></a></h3>
         </div>
         <div class="collapsible">
             <input id="collapsible1" type="checkbox" name="collapsible1">
@@ -35,12 +40,13 @@
             </button>
             <div class="collapsible-body">
                 <ul class="inline">
-                    <li><a href="orders">Заказы</a></li>
-                    <li><a href="eng">Eng</a></li>
-                    <li><a href="rus">Рус</a></li>
+                    <li><a href="orders"><fmt:message key="orders"/></a></li>
+                    <custom:lang path="/library/catalog"/>
                     <li>
                         <form action="${pageContext.request.contextPath}/library/sign-out">
-                            <button class="btn-small btn-danger-outline">Signout</button>
+                            <button class="btn-small btn-danger-outline">
+                                <fmt:message key="sign_out"/>
+                            </button>
                         </form>
                     </li>
                 </ul>
@@ -55,10 +61,10 @@
             <div class="col-fill col">
                 <div class="text-center">
                     <c:if test="${requestScope.type eq 'add'}">
-                        <h1>Add book</h1>
+                        <h1><fmt:message key="add_book"/></h1>
                     </c:if>
                     <c:if test="${requestScope.type eq 'edit'}">
-                        <h1>Edit book</h1>
+                        <h1><fmt:message key="edit_bok"/></h1>
                     </c:if>
                     <h2>~~~</h2>
                 </div>
@@ -84,7 +90,7 @@
                     </c:if>
                     <div class="row flex-center">
                         <div class="form-group">
-                            <label for="title">Название</label>
+                            <label for="title"><fmt:message key="field_title"/></label>
                             <c:if test="${requestScope.type eq 'add'}">
                                 <input type="text" name="title" id="title">
                             </c:if>
@@ -95,7 +101,7 @@
                     </div>
                     <div class="row flex-center">
                         <div class="form-group">
-                            <label for="author">Автор</label>
+                            <label for="author"><fmt:message key="field_author"/></label>
                             <c:if test="${requestScope.type eq 'add'}">
                                 <input type="text" name="author" id="author">
                             </c:if>
@@ -106,7 +112,7 @@
                     </div>
                     <div class="row flex-center">
                         <div class="form-group">
-                            <label for="count">Количество</label>
+                            <label for="count"><fmt:message key="field_count"/></label>
                             <c:if test="${requestScope.type eq 'add'}">
                                 <input type="text" name="count" id="count">
                             </c:if>
@@ -116,7 +122,7 @@
                         </div>
                     </div>
                     <div class="row flex-center">
-                        <button>Подтвердить</button>
+                        <button><fmt:message key="confirm"/></button>
                     </div>
                 </form>
             </div>
