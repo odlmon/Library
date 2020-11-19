@@ -1,39 +1,28 @@
 package filter;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public class UserSessionFilter implements Filter {
+public class UserSessionFilter extends HttpFilter {
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        var request = (HttpServletRequest) servletRequest;
-        var response = (HttpServletResponse) servletResponse;
         HttpSession session = request.getSession();
         if (session.getAttribute("user") != null) {
-            filterChain.doFilter(servletRequest, servletResponse);
+            super.doFilter(request, response, chain);
         } else {
             String url = request.getRequestURL().toString();
             String resource = url.substring(url.lastIndexOf("/"));
             if (!resource.equals("/sign-in") && !resource.equals("/sign-up")) {
                 response.sendRedirect(request.getContextPath());
             } else {
-                filterChain.doFilter(servletRequest, servletResponse);
+                super.doFilter(request, response, chain);
             }
         }
-    }
-
-    @Override
-    public void destroy() {
-
     }
 }
 
