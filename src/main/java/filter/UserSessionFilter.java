@@ -17,7 +17,8 @@ public class UserSessionFilter extends HttpFilter {
         } else {
             String url = request.getRequestURL().toString();
             String resource = url.substring(url.lastIndexOf("/"));
-            if (!resource.equals("/sign-in") && !resource.equals("/sign-up")) {
+            if (resource.equals("/catalog") || resource.equals("/orders") || resource.equals("/addBook") ||
+                    resource.equals("/editBook")) {
                 response.sendRedirect(request.getContextPath());
             } else {
                 super.doFilter(request, response, chain);

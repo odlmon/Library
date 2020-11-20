@@ -56,7 +56,7 @@
             <div class="col-fill col">
                 <form>
                     <div class="text-center">
-                        <h1><fmt:message key="catalog"/></h1>
+                        <h1><p><fmt:message key="catalog"/></p></h1>
                         <h2>~~~</h2>
                     </div>
 
@@ -101,8 +101,8 @@
                             </c:if>
                                 <div class="card margin-bottom" style="width: 40rem;">
                                     <div class="card-body">
-                                        <h4 class="card-title">${book.title}</h4>
-                                        <h5 class="card-subtitle">${book.author}</h5>
+                                        <h4 class="card-title"><p>${book.title}</p></h4>
+                                        <h5 class="card-subtitle"><p>${book.author}</p></h5>
                                         <input type="hidden" name="bookId" value="${book.id}">
                                         <c:if test="${sessionScope.user.role eq 'USER'}">
                                             <c:if test="${book.count gt 0}">

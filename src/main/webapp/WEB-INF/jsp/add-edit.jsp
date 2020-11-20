@@ -61,10 +61,10 @@
             <div class="col-fill col">
                 <div class="text-center">
                     <c:if test="${requestScope.type eq 'add'}">
-                        <h1><fmt:message key="add_book"/></h1>
+                        <h1><p><fmt:message key="add_book"/></p></h1>
                     </c:if>
                     <c:if test="${requestScope.type eq 'edit'}">
-                        <h1><fmt:message key="edit_bok"/></h1>
+                        <h1><p><fmt:message key="edit_bok"/></p></h1>
                     </c:if>
                     <h2>~~~</h2>
                 </div>

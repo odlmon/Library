@@ -5,6 +5,8 @@ import bean.Order;
 import bean.User;
 import bean.enums.OrderStatus;
 import bean.enums.UserRole;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import service.ClientService;
 import service.LibraryService;
 import service.exception.ServiceException;
@@ -23,6 +25,7 @@ import java.util.ResourceBundle;
 public class Controller extends HttpServlet {
     private final ClientService clientService = ServiceFactory.getInstance().getClientService();
     private final LibraryService libraryService = ServiceFactory.getInstance().getLibraryService();
+    private final Logger logger = (Logger) LogManager.getLogger();
     private ResourceBundle bundle = ResourceBundle.getBundle("text");
 
     private String dispatch(String url, String destination) {
@@ -44,6 +47,7 @@ public class Controller extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/jsp/sign-in.jsp").forward(request, response);
             }
         } catch (ServiceException e) {
+            logger.error(e.getMessage());
             request.setAttribute("errorMessage", bundle.getString("empty_fields"));
             request.getRequestDispatcher("/WEB-INF/jsp/sign-in.jsp").forward(request, response);
         }
@@ -67,6 +71,7 @@ public class Controller extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/jsp/sign-up.jsp").forward(request, response);
             }
         } catch (ServiceException e) {
+            logger.error(e.getMessage());
             request.setAttribute("errorMessage", bundle.getString("empty_fields"));
             request.getRequestDispatcher("/WEB-INF/jsp/sign-up.jsp").forward(request, response);
         }
@@ -86,6 +91,7 @@ public class Controller extends HttpServlet {
             try {
                 request.setAttribute("books", libraryService.getBookList());
             } catch (ServiceException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_book_list"));
             }
         } else {
@@ -96,6 +102,7 @@ public class Controller extends HttpServlet {
                     request.setAttribute("noElements", bundle.getString("nothing_found"));
                 }
             } catch (ServiceException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_searching"));
             }
         }
@@ -116,6 +123,7 @@ public class Controller extends HttpServlet {
                         }
                         response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
                     } catch (ServiceException e) {
+                        logger.error(e.getMessage());
                         request.setAttribute("errorMessage", bundle.getString("error_deleting"));
                         request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
                     }
@@ -126,6 +134,7 @@ public class Controller extends HttpServlet {
                         request.setAttribute("type", "edit");
                         request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
                     } catch (ServiceException e) {
+                        logger.error(e.getMessage());
                         request.setAttribute("errorMessage", bundle.getString("error_getting"));
                         request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
                     }
@@ -139,6 +148,7 @@ public class Controller extends HttpServlet {
             try {
                 request.setAttribute("books", libraryService.getBookList());
             } catch (ServiceException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_book_list"));
             }
             request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
@@ -218,6 +228,7 @@ public class Controller extends HttpServlet {
             request.setAttribute("orders", orders);
             request.getRequestDispatcher("/WEB-INF/jsp/orders.jsp").forward(request, response);
         } catch (ServiceException e) {
+            logger.error(e.getMessage());
             request.setAttribute("errorMessage", bundle.getString("error_order_list"));
         }
     }
@@ -241,10 +252,12 @@ public class Controller extends HttpServlet {
                     response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
                 }
             } catch (ServiceException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_add_book"));
                 request.setAttribute("type", "add");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
             } catch (NumberFormatException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_count"));
                 request.setAttribute("type", "add");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
@@ -274,10 +287,12 @@ public class Controller extends HttpServlet {
                     response.sendRedirect(dispatch(request.getRequestURL().toString(), "catalog"));
                 }
             } catch (ServiceException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_edit_book"));
                 request.setAttribute("type", "edit");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
             } catch (NumberFormatException e) {
+                logger.error(e.getMessage());
                 request.setAttribute("errorMessage", bundle.getString("error_count"));
                 request.setAttribute("type", "edit");
                 request.getRequestDispatcher("/WEB-INF/jsp/add-edit.jsp").forward(request, response);
@@ -304,6 +319,7 @@ public class Controller extends HttpServlet {
             case "orders" -> serveOrdersPage(request, response);
             case "addBook" -> addBook(request, response);
             case "editBook" -> editBook(request, response);
+            default -> request.getRequestDispatcher("/WEB-INF/jsp/404.jsp").forward(request, response);
         }
     }
 
@@ -314,6 +330,7 @@ public class Controller extends HttpServlet {
         switch (action) {
             case "sign-in" -> signIn(request, response);
             case "sign-up" -> signUp(request, response);
+            default -> request.getRequestDispatcher("/WEB-INF/jsp/404.jsp").forward(request, response);
         }
     }
 }

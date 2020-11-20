@@ -55,7 +55,7 @@
         <div class="row flex-center">
             <div class="col-fill col">
                 <div class="text-center">
-                    <h1><fmt:message key="orders"/></h1>
+                    <h1><p><fmt:message key="orders"/></p></h1>
                     <h2>~~~</h2>
                 </div>
 
@@ -79,7 +79,7 @@
                     <div class="content" id="content1">
                         <c:if test="${not empty requestScope.noProcessing}">
                             <div class="row flex-center">
-                                <h4>${requestScope.noProcessing}</h4>
+                                <h4><p>${requestScope.noProcessing}</p></h4>
                             </div>
                         </c:if>
 
@@ -88,8 +88,8 @@
                                 <form action="${pageContext.request.contextPath}/library/orders" method="get">
                                     <div class="card margin-bottom" style="width: 40rem;">
                                         <div class="card-body">
-                                            <h4 class="card-title">${order.book.title}</h4>
-                                            <h5 class="card-subtitle">${order.book.author}</h5>
+                                            <h4 class="card-title"><p>${order.book.title}</p></h4>
+                                            <h5 class="card-subtitle"><p>${order.book.author}</p></h5>
                                             <c:if test="${sessionScope.user.role eq 'USER'}">
                                                 <input type="hidden" name="action" value="cancel">
                                                 <input type="hidden" name="bookId" value="${order.book.id}">
@@ -123,7 +123,7 @@
                     <div class="content" id="content2">
                         <c:if test="${not empty requestScope.noActive}">
                             <div class="row flex-center">
-                                <h4>${requestScope.noActive}</h4>
+                                <h4><p>${requestScope.noActive}</p></h4>
                             </div>
                         </c:if>
 
@@ -132,15 +132,16 @@
                                 <form action="${pageContext.request.contextPath}/library/orders" method="get">
                                     <div class="card margin-bottom" style="width: 40rem;">
                                         <div class="card-body">
-                                            <h4 class="card-title">${order.book.title}
+                                            <h4 class="card-title"><p>
+                                                    ${order.book.title}
                                                 <c:if test="${order.status eq 'READING_ROOM'}">
                                                     <span class="badge"><fmt:message key="reading_room"/></span>
                                                 </c:if>
                                                 <c:if test="${order.status eq 'SUBSCRIPTION'}">
                                                     <span class="badge secondary"><fmt:message key="subscription"/></span>
                                                 </c:if>
-                                            </h4>
-                                            <h5 class="card-subtitle">${order.book.author}</h5>
+                                            </p></h4>
+                                            <h5 class="card-subtitle"><p>${order.book.author}</p></h5>
                                             <c:if test="${sessionScope.user.role eq 'USER'}">
                                                 <input type="hidden" name="action" value="giveback">
                                                 <input type="hidden" name="bookId" value="${order.book.id}">

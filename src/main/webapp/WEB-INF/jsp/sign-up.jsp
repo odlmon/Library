@@ -42,9 +42,9 @@
     <div class="row flex-center">
         <div class="col-fill col">
             <div class="text-center">
-                <h1><fmt:message key="library"/></h1>
+                <h1><p><fmt:message key="library"/></p></h1>
                 <h2>~~~</h2>
-                <h3><fmt:message key="sign_up"/></h3>
+                <h3><p><fmt:message key="sign_up"/></p></h3>
             </div>
 
             <form action="${pageContext.request.contextPath}/library/sign-up" method="post">

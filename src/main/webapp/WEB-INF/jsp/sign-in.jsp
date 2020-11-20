@@ -42,9 +42,9 @@
     <div class="row flex-center">
         <div class="col-fill col">
             <div class="text-center">
-                <h1><fmt:message key="library"/></h1>
+                <h1><p><fmt:message key="library"/></p></h1>
                 <h2>~~~</h2>
-                <h3><fmt:message key="sign_in"/></h3>
+                <h3><p><fmt:message key="sign_in"/></p></h3>
             </div>
 
             <form action="${pageContext.request.contextPath}/library/sign-in" method="post">
@@ -80,7 +80,7 @@
             </form>
 
             <div class="row flex-center">
-                <h4><fmt:message key="not_registered"/></h4>
+                <h4><p><fmt:message key="not_registered"/></p></h4>
             </div>
             <div class="row flex-center">
                 <form action="${pageContext.request.contextPath}/library/sign-up">
