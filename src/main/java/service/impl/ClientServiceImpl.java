@@ -9,9 +9,18 @@ import service.exception.ServiceException;
 
 import java.util.List;
 
+/**
+ * Implementation of service, which manipulates users
+ */
 public class ClientServiceImpl implements ClientService {
     private final UserDao userDao = DAOFactory.getInstance().getUserDAO();
 
+    /**
+     * Checks if pair of login and password exists
+     * @param user user
+     * @return true if pair of login and password exists, else false
+     * @throws ServiceException default
+     */
     private boolean isPasswordCorrect(User user) throws ServiceException {
         try {
             List<User> users = userDao.getUsers();
@@ -24,6 +33,12 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Checks if passed login is unique
+     * @param user user
+     * @return true if passed login is unique, else false
+     * @throws ServiceException default
+     */
     private boolean isLoginUnique(User user) throws ServiceException {
         try {
             List<User> users = userDao.getUsers();
@@ -33,6 +48,12 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Checks entering param and calls DAO function to sign user in
+     * @param user existing user
+     * @return existing user, if he signed in successfully
+     * @throws ServiceException default
+     */
     @Override
     public User signIn(User user) throws ServiceException {
         if (user.getLogin().equals("")) {
@@ -50,6 +71,12 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Checks entering param and calls DAO function to sign user up
+     * @param user new user
+     * @return new user, if he signed up successfully
+     * @throws ServiceException default
+     */
     @Override
     public User signUp(User user)
             throws ServiceException {
@@ -69,6 +96,12 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Calls DAO function to get user by login
+     * @param login login
+     * @return user by login
+     * @throws ServiceException default
+     */
     @Override
     public User getUserByLogin(String login) throws ServiceException {
         try {

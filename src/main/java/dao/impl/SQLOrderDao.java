@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of OrderDao for SQL
+ */
 public class SQLOrderDao implements OrderDao {
     private final List<Order> orders = new ArrayList<>();
 
@@ -23,17 +26,32 @@ public class SQLOrderDao implements OrderDao {
         orders.add(order);
     }
 
+    /**
+     * Adds order to table
+     * @param order order
+     * @throws DAOException default
+     */
     @Override
     public void addOrder(Order order) throws DAOException {
         orders.add(order);
     }
 
+    /**
+     * Deletes order from table
+     * @param order order
+     * @throws DAOException default
+     */
     @Override
     public void deleteOrder(Order order) throws DAOException {
         Order odd = orders.stream().filter(o -> o.getUser().equals(order.getUser()) && o.getBook().equals(order.getBook())).findFirst().get();
         orders.remove(odd);
     }
 
+    /**
+     * Updates status of order with specified user-book pair
+     * @param order order
+     * @throws DAOException default
+     */
     @Override
     public void updateOrder(Order order) throws DAOException {
         orders.stream()
@@ -43,11 +61,22 @@ public class SQLOrderDao implements OrderDao {
                 .setStatus(order.getStatus());
     }
 
+    /**
+     * Gets list of all orders
+     * @return list of all orders
+     * @throws DAOException default
+     */
     @Override
     public List<Order> getOrders() throws DAOException {
         return orders;
     }
 
+    /**
+     * Gets list of user orders
+     * @param user user
+     * @return list of user orders
+     * @throws DAOException default
+     */
     @Override
     public List<Order> getUserOrders(User user) throws DAOException {
         return orders.stream().filter(order -> order.getUser().equals(user)).collect(Collectors.toList());

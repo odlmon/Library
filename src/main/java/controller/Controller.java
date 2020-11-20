@@ -28,10 +28,22 @@ public class Controller extends HttpServlet {
     private final Logger logger = (Logger) LogManager.getLogger();
     private ResourceBundle bundle = ResourceBundle.getBundle("text");
 
+    /**
+     * Changing destination of url to specified one
+     * @param url original url
+     * @param destination final destination
+     */
     private String dispatch(String url, String destination) {
         return url.substring(0, url.lastIndexOf("/")) + "/" + destination;
     }
 
+    /**
+     * Sign in function for every role, redirects to catalog on success
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void signIn(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         var user = new User();
@@ -53,6 +65,14 @@ public class Controller extends HttpServlet {
         }
     }
 
+    /**
+     * Sign up function for User role, redirects to catalog on success
+     *
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void signUp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         var user = new User();
@@ -77,6 +97,13 @@ public class Controller extends HttpServlet {
         }
     }
 
+    /**
+     * Sign out function for every role, redirects to sign in page
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void signOut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -84,6 +111,14 @@ public class Controller extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/library/sign-in");
     }
 
+    /**
+     * Setting attributes for catalog page of User role, performs searching and getting of books catalog,
+     * forwards to catalog page
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void serveUserCatalogPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String searchRequest = request.getParameter("search");
@@ -109,6 +144,14 @@ public class Controller extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/catalog.jsp").forward(request, response);
     }
 
+    /**
+     * Setting attributes for catalog page of Librarian role, performs deleting, editing, adding of books,
+     * forwards to catalog page or add-edit page
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void serveLibrarianCatalogPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -155,6 +198,13 @@ public class Controller extends HttpServlet {
         }
     }
 
+    /**
+     * Decides for which role catalog page should be given
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void serveCatalogPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
@@ -165,6 +215,15 @@ public class Controller extends HttpServlet {
         }
     }
 
+    /**
+     * Gives list of user orders, performs given action, if language wasn't set at the moment
+     * @param bookId id of book for operation
+     * @param user user data
+     * @param action name of operation
+     * @param langIsSet flag, which shows if language wasn't set at the moment
+     * @return list of user orders
+     * @throws ServiceException default
+     */
     private List<Order> getUserOrders(String bookId, User user, String action, boolean langIsSet) throws ServiceException {
         if (bookId != null && !langIsSet) {
             Book book = libraryService.getBookById(bookId);
@@ -181,6 +240,15 @@ public class Controller extends HttpServlet {
         return libraryService.getUserOrders(user);
     }
 
+    /**
+     * Gives list of all orders, performs given action, if language wasn't set at the moment
+     * @param bookId id of book for operation
+     * @param userLogin user login
+     * @param action name of operation
+     * @param langIsSet flag, which shows if language wasn't set at the moment
+     * @return list of user orders
+     * @throws ServiceException default
+     */
     private List<Order> getOrders(String bookId, String userLogin, String action, boolean langIsSet) throws ServiceException {
         if (bookId != null && !langIsSet) {
             User user = clientService.getUserByLogin(userLogin);
@@ -205,6 +273,13 @@ public class Controller extends HttpServlet {
         return libraryService.getOrders();
     }
 
+    /**
+     * Decide, page for which role should be given, setting attribute for page
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void serveOrdersPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -233,6 +308,13 @@ public class Controller extends HttpServlet {
         }
     }
 
+    /**
+     * Performing add book operation on request from catalog root
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void addBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String title = request.getParameter("title");
@@ -265,6 +347,13 @@ public class Controller extends HttpServlet {
         }
     }
 
+    /**
+     * Performing edit book operation on request from catalog root
+     * @param request http request
+     * @param response http response
+     * @throws ServletException default
+     * @throws IOException default
+     */
     private void editBook(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id = request.getParameter("id");
@@ -300,8 +389,11 @@ public class Controller extends HttpServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    /**
+     * Checks if "lang" parameter is set, if yes, than set session attribute and bundle locale
+     * @param request http request
+     */
+    private void setLangIfPresent(HttpServletRequest request) {
         String lang = request.getParameter("lang");
         if (lang != null) {
             request.getSession().setAttribute("lang", lang);
@@ -309,8 +401,22 @@ public class Controller extends HttpServlet {
             String query = request.getQueryString();
             request.setAttribute("queryWithLang", query.substring(0, query.lastIndexOf("=")) + "=");
         }
-        String[] arr = request.getRequestURI().split("/");
-        String action = arr[arr.length - 1];
+    }
+
+    /**
+     * Gets action string from url
+     * @param URI URI
+     * @return string with action
+     */
+    private String getActionFromURI(String URI) {
+        String[] arr = URI.split("/");
+        return arr[arr.length - 1];
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        setLangIfPresent(request);
+        String action = getActionFromURI(request.getRequestURI());
         switch (action) {
             case "sign-in" -> request.getRequestDispatcher("/WEB-INF/jsp/sign-in.jsp").forward(request, response);
             case "sign-up" -> request.getRequestDispatcher("/WEB-INF/jsp/sign-up.jsp").forward(request, response);
@@ -325,8 +431,7 @@ public class Controller extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String[] arr = request.getRequestURI().split("/");
-        String action = arr[arr.length - 1];
+        String action = getActionFromURI(request.getRequestURI());
         switch (action) {
             case "sign-in" -> signIn(request, response);
             case "sign-up" -> signUp(request, response);
