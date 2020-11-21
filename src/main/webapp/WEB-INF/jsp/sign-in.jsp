@@ -75,7 +75,7 @@
                 </div>
 
                 <div class="row flex-center">
-                    <input class="paper-btn" type="submit" value="Submit">
+                    <button><fmt:message key="confirm"/></button>
                 </div>
             </form>
 

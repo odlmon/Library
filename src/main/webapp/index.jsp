@@ -21,7 +21,7 @@
     <div class="row flex-center">
         <div class="col-fill col">
             <div class="text-center">
-                <h1><fmt:message key="library"/></h1>
+                <h1><p><fmt:message key="library"/></p></h1>
                 <h2>~~~</h2>
                 <h3>
                     <a href="${pageContext.request.contextPath}/library/sign-in"><fmt:message key="sign_in"/></a>
