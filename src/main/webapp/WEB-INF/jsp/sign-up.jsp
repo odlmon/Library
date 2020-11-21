@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="row flex-center">
-                    <input class="paper-btn col-3" type="submit" value="Submit">
+                    <button><fmt:message key="confirm"/></button>
                 </div>
             </form>
         </div>
