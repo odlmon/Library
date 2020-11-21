@@ -241,15 +241,16 @@ public class Controller extends HttpServlet {
     }
 
     /**
-     * Gives list of all orders, performs given action, if language wasn't set at the moment
+     * Gives list of all orders, performs given action for user with given login, if language wasn't set at the moment
      * @param bookId id of book for operation
-     * @param userLogin user login
+     * @param userLogin login of user, for whom action will be performed
      * @param action name of operation
      * @param langIsSet flag, which shows if language wasn't set at the moment
      * @return list of user orders
      * @throws ServiceException default
      */
-    private List<Order> getOrders(String bookId, String userLogin, String action, boolean langIsSet) throws ServiceException {
+    private List<Order> getOrders(String bookId, String userLogin, String action, boolean langIsSet)
+            throws ServiceException {
         if (bookId != null && !langIsSet) {
             User user = clientService.getUserByLogin(userLogin);
             Book book = libraryService.getBookById(bookId);

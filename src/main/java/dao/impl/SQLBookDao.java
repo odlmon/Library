@@ -3,26 +3,18 @@ package dao.impl;
 import bean.Book;
 import dao.BookDao;
 import dao.exception.DAOException;
+import dao.pool.ConnectionPool;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Implementation of BookDao for SQL
  */
 public class SQLBookDao implements BookDao {
-    private final List<Book> list = new ArrayList<>();
-    private int i = 20;
-
-    {
-        list.add(new Book(1, "Сурков Д.А.", "Эфиродинамика", 1));
-        list.add(new Book(2, "Сурков К.А.", "Сталин - агент госдепа, или почему Россия - сверхдержава", 2));
-        list.add(new Book(3, "Фадеева Е.Е.", "Психбольница в руках пациентов", 3));
-//        list.add(new Book(4, "Anonynimous", "The book you cannot get", 0));
-    }
-
     /**
      * Adds book to table
      * @param book book
@@ -30,8 +22,24 @@ public class SQLBookDao implements BookDao {
      */
     @Override
     public void addBook(Book book) throws DAOException {
-        book.setId(i++);
-        list.add(book);
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "INSERT INTO books (author, title, count) VALUES (?, ?, ?)";
+            var statement = connection.prepareStatement(sql);
+            statement.setString(1, book.getAuthor());
+            statement.setString(2, book.getTitle());
+            statement.setInt(3, book.getCount());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
     }
 
     /**
@@ -41,10 +49,25 @@ public class SQLBookDao implements BookDao {
      */
     @Override
     public void editBook(Book book) throws DAOException {
-        Book edited = list.stream().filter(b -> b.getId() == book.getId()).findFirst().get();
-        edited.setTitle(book.getTitle());
-        edited.setAuthor(book.getAuthor());
-        edited.setCount(book.getCount());
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "UPDATE books SET author=?, title=?, count=? WHERE id=?";
+            var statement = connection.prepareStatement(sql);
+            statement.setString(1, book.getAuthor());
+            statement.setString(2, book.getTitle());
+            statement.setInt(3, book.getCount());
+            statement.setInt(4, book.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
     }
 
     /**
@@ -53,31 +76,23 @@ public class SQLBookDao implements BookDao {
      * @throws DAOException default
      */
     @Override
-    public void deleteBook(Book book) throws DAOException { //TODO: get orders by book and delete
-        Book odd = list.stream().filter(b -> b.getId() == book.getId()).findFirst().get();
-        list.remove(odd);
-    }
+    public void deleteBook(Book book) throws DAOException {
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
 
-    /**
-     * Decrements book count
-     * @param book book
-     * @throws DAOException defauly
-     */
-    @Override
-    public void decrementCount(Book book) throws DAOException {
-        Book needed = list.stream().filter(b -> b.getId() == book.getId()).findFirst().get();
-        needed.setCount(needed.getCount() - 1);
-    }
-
-    /**
-     * Increments book count
-     * @param book book
-     * @throws DAOException default
-     */
-    @Override
-    public void incrementCount(Book book) throws DAOException {
-        Book needed = list.stream().filter(b -> b.getId() == book.getId()).findFirst().get();
-        needed.setCount(needed.getCount() + 1);
+            var sql = "DELETE FROM books WHERE id=?";
+            var statement = connection.prepareStatement(sql);
+            statement.setInt(1, book.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
     }
 
     /**
@@ -88,7 +103,31 @@ public class SQLBookDao implements BookDao {
      */
     @Override
     public Book getBookById(int id) throws DAOException {
-        return list.stream().filter(book -> book.getId() == id).findFirst().orElse(null);
+        var book = new Book();
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "SELECT * FROM books WHERE id=?";
+            var statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                book.setId(rs.getInt("id"));
+                book.setTitle(rs.getString("title"));
+                book.setAuthor(rs.getString("author"));
+                book.setCount(rs.getInt("count"));
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
+        return book;
     }
 
     /**
@@ -98,7 +137,32 @@ public class SQLBookDao implements BookDao {
      */
     @Override
     public List<Book> getBooks() throws DAOException {
-        return list;
+        List<Book> books = new ArrayList<>();
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "SELECT * FROM books";
+            var statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                var book = new Book();
+                book.setId(rs.getInt("id"));
+                book.setAuthor(rs.getString("author"));
+                book.setTitle(rs.getString("title"));
+                book.setCount(rs.getInt("count"));
+                books.add(book);
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
+        return books;
     }
 
     /**
@@ -109,9 +173,31 @@ public class SQLBookDao implements BookDao {
      */
     @Override
     public List<Book> searchBooks(String request) throws DAOException {
-        return Stream.concat(list.stream().filter(book -> book.getTitle().contains(request)),
-                list.stream().filter(book -> book.getAuthor().contains(request)))
-                .distinct()
-                .collect(Collectors.toList());
+        List<Book> books = new ArrayList<>();
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "SELECT * FROM books WHERE title LIKE '%" + request + "%' OR author LIKE '%" + request + "%'";
+            var statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                var book = new Book();
+                book.setId(rs.getInt("id"));
+                book.setAuthor(rs.getString("author"));
+                book.setTitle(rs.getString("title"));
+                book.setCount(rs.getInt("count"));
+                books.add(book);
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
+        return books;
     }
 }

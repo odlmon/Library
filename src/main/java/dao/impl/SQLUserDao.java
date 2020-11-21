@@ -7,6 +7,7 @@ import dao.exception.DAOException;
 import dao.pool.ConnectionPool;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -16,14 +17,6 @@ import java.util.List;
  * Implementation of UserDao for SQL
  */
 public class SQLUserDao implements UserDao {
-    private final List<User> users = new ArrayList<>();
-    private int i = 2;
-
-    {
-        users.add(new User(1, "A", "B", "C", "D", UserRole.USER));
-        users.add(new User(228, "Mike", "Govnovskiy", "L", "L", UserRole.LIBRARIAN));
-    }
-
     /**
      * Finds user with appropriate login-password pair
      * @param user existing user
@@ -32,9 +25,30 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public User signIn(User user) throws DAOException {
-        return users.stream()
-                .filter(u -> u.getLogin().equals(user.getLogin()) && u.getPassword().equals(user.getPassword()))
-                .findFirst().get();
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "SELECT * FROM users WHERE login=? AND password=?";
+            var statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getLogin());
+            statement.setString(2, user.getPassword());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                user.setId(rs.getInt("id"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setRole(UserRole.values()[rs.getInt("role")]);
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
+        return user;
     }
 
     /**
@@ -48,7 +62,7 @@ public class SQLUserDao implements UserDao {
         ConnectionPool pool = null;
         Connection connection = null;
         try {
-            pool = ConnectionPool.getConnectionPool();
+            pool = ConnectionPool.getInstance();
             connection = pool.getConnection();
 
             var sql = "INSERT INTO users (first_name, last_name, login, password, role) VALUES (?, ?, ?, ?, ?)";
@@ -70,9 +84,6 @@ public class SQLUserDao implements UserDao {
             if (pool != null)
                 pool.returnConnection(connection);
         }
-
-        users.add(user);
-        user.setId(i++);
         return user;
     }
 
@@ -84,7 +95,33 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public User getUserByLogin(String login) throws DAOException {
-        return users.stream().filter(user -> user.getLogin().equals(login)).findFirst().get();
+        User user = new User();
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "SELECT * FROM users WHERE login=?";
+            var statement = connection.prepareStatement(sql);
+            statement.setString(1, login);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                user.setId(rs.getInt("id"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setLogin(rs.getString("login"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(UserRole.values()[rs.getInt("role")]);
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
+        return user;
     }
 
     /**
@@ -94,6 +131,33 @@ public class SQLUserDao implements UserDao {
      */
     @Override
     public List<User> getUsers() throws DAOException {
+        List<User> users = new ArrayList<>();
+        ConnectionPool pool = null;
+        Connection connection = null;
+        try {
+            pool = ConnectionPool.getInstance();
+            connection = pool.getConnection();
+
+            var sql = "SELECT * FROM users";
+            var statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                var user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setLogin(rs.getString("login"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(UserRole.values()[rs.getInt("role")]);
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        } finally {
+            if (pool != null)
+                pool.returnConnection(connection);
+        }
         return users;
     }
 }

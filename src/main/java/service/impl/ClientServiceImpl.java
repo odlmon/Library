@@ -105,7 +105,12 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public User getUserByLogin(String login) throws ServiceException {
         try {
-            return userDao.getUserByLogin(login);
+            User user = userDao.getUserByLogin(login);
+            if (user.getId() == -1) {
+                throw new ServiceException("No such user with specified login");
+            } else {
+                return user;
+            }
         } catch (DAOException e) {
             throw new ServiceException(e);
         }

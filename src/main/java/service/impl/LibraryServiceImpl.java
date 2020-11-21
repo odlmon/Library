@@ -68,6 +68,7 @@ public class LibraryServiceImpl implements LibraryService { //service should che
     public void deleteBook(Book book) throws ServiceException {
         try {
             bookDao.deleteBook(book);
+            orderDao.deleteOrdersByBook(book);
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -111,7 +112,12 @@ public class LibraryServiceImpl implements LibraryService { //service should che
     @Override
     public Book getBookById(String id) throws ServiceException {
         try {
-            return bookDao.getBookById(Integer.parseInt(id));
+            Book book = bookDao.getBookById(Integer.parseInt(id));
+            if (book.getId() == -1) {
+                throw new ServiceException("No such book with specified id");
+            } else {
+                return book;
+            }
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -126,7 +132,9 @@ public class LibraryServiceImpl implements LibraryService { //service should che
     public void addNewOrder(Order order) throws ServiceException {
         try {
             orderDao.addOrder(order);
-            bookDao.decrementCount(order.getBook());
+            Book book = order.getBook();
+            book.setCount(book.getCount() - 1);
+            bookDao.editBook(book);
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -141,7 +149,8 @@ public class LibraryServiceImpl implements LibraryService { //service should che
     public void deleteOrder(Order order) throws ServiceException {
         try {
             orderDao.deleteOrder(order);
-            bookDao.incrementCount(order.getBook());
+            Book book = order.getBook();
+            book.setCount(book.getCount() + 1);
         } catch (DAOException e) {
             throw new ServiceException(e);
         }

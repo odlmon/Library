@@ -18,7 +18,7 @@ public class ConnectionPool {
 
     private ConnectionPool() {}
 
-    public static ConnectionPool getConnectionPool() throws DAOException {
+    public static ConnectionPool getInstance() throws DAOException {
         if (pool == null) {
             try {
                 var initContext = new InitialContext();
